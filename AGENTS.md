@@ -50,7 +50,7 @@ hotroom/
 
 - **Why Tailwind:** Utility-first approach is fast for responsive mobile layouts. No fighting a component library's opinions when building custom game UI.
 - **Why shadcn/ui:** Copy-paste components we own (not a dependency). Gives polished structural UI (forms, dialogs, toasts) without bloat. Code is in the repo, fully customizable.
-- **Why Framer Motion:** Party games need *feel* — dramatic reveals, countdown animations, vote transitions. Framer Motion makes this easy and performant.
+- **Why Framer Motion:** Party games need _feel_ — dramatic reveals, countdown animations, vote transitions. Framer Motion makes this easy and performant.
 
 ### Database: PostgreSQL + Drizzle ORM
 
@@ -146,12 +146,14 @@ packages/shared/
 ### Code Style
 
 **Naming conventions:**
+
 - `camelCase` for variables, functions, and method names (e.g., `playerCount`, `getActiveRooms`)
 - `PascalCase` for classes, interfaces, types, and React components (e.g., `GameRoom`, `PlayerState`, `VotePanel`)
 - `UPPER_SNAKE_CASE` for constants (e.g., `MAX_PLAYERS`, `ROUND_DURATION_MS`)
 - `kebab-case` for file and directory names (e.g., `game-room.ts`, `vote-panel.tsx`)
 
 **Braces:**
+
 - Opening brace on the same line (1TBS / "one true brace style"):
 
 ```typescript
@@ -170,6 +172,7 @@ These conventions are enforced by ESLint and Prettier — configuration is the s
 Branches follow the pattern: `<type>/<short-description>`
 
 Types:
+
 - `feat/` — new features (e.g., `feat/lobby-ui`, `feat/vote-reveal-animation`)
 - `fix/` — bug fixes (e.g., `fix/reconnection-race-condition`)
 - `test/` — adding or updating tests (e.g., `test/state-machine-transitions`)
@@ -178,6 +181,7 @@ Types:
 - `docs/` — documentation only (e.g., `docs/api-endpoints`)
 
 Rules:
+
 - Use lowercase kebab-case for the description
 - Keep it short but descriptive
 - `main` is the default branch — never push directly, always use PRs
