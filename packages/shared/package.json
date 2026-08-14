@@ -1,0 +1,13 @@
+{
+  "name": "@hotroom/shared",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "build": "echo 'no build yet'",
+    "lint": "echo 'no lint yet'",
+    "typecheck": "echo 'no typecheck yet'",
+    "test": "echo 'no tests yet'"
+  }
+}
