@@ -96,6 +96,53 @@ votes: id, round_id, player_id, choice (agree|disagree), submitted_at
 - Conventional commits
 - Docker Compose for local development (app + Postgres)
 
+### Testing
+
+**Runner:** Vitest (fast, native TypeScript support, ESM-first, compatible with Jest API).
+
+**File structure:** Tests live in a separate `test/` directory that mirrors the source structure:
+
+```
+apps/server/
+├── src/
+│   └── rooms/
+│       └── room-service.ts
+├── test/
+│   └── rooms/
+│       └── room-service.test.ts
+packages/shared/
+├── src/
+│   └── state-machine/
+│       └── game-state.ts
+├── test/
+│   └── state-machine/
+│       └── game-state.test.ts
+```
+
+**Naming:** `<filename>.test.ts` for unit tests, `<filename>.integration.test.ts` for integration tests.
+
+**What to test:**
+
+- **Unit tests (packages/shared):** Game state machine transitions, validation logic, score calculations, utility functions. These should be pure and fast.
+- **Unit tests (apps/server):** Service logic, room management, vote tallying. Mock the database layer.
+- **Integration tests (apps/server):** Socket.IO event flows (player joins, vote submitted, round transitions). Use a real socket connection against a test server instance.
+- **Component tests (apps/web):** Key UI states (lobby view, voting view, reveal view). Use Vitest + React Testing Library.
+
+**What NOT to test:**
+
+- Trivial getters/setters
+- Third-party library internals
+- Pixel-perfect UI layout
+
+**Conventions:**
+
+- Use `describe` blocks to group related tests
+- Test names should read as behavior: `it("rejects a vote after the round has ended")`
+- Prefer `toEqual` for objects, `toBe` for primitives
+- Use factories/fixtures for test data, not inline object literals repeated everywhere
+
+**Coverage:** Aim for high coverage on `packages/shared` (game logic is critical). Don't chase 100% everywhere — focus on behavior that matters.
+
 ### Code Style
 
 **Naming conventions:**
