@@ -4,12 +4,19 @@
   "private": true,
   "scripts": {
     "build": "tsc --build",
-    "dev": "echo 'no dev yet'",
+    "dev": "tsx watch src/index.ts",
     "lint": "eslint src/",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
   "dependencies": {
-    "@hotroom/shared": "workspace:*"
+    "@fastify/cors": "^11.3.0",
+    "@hotroom/shared": "workspace:*",
+    "fastify": "^5.11.3",
+    "socket.io": "^4.8.3"
+  },
+  "devDependencies": {
+    "socket.io-client": "^4.8.3",
+    "tsx": "^4.23.12"
   }
 }
