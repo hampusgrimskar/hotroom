@@ -4,7 +4,7 @@
 
 ### Core Infrastructure
 
-- [ ] Set up Fastify server with Socket.IO
+- [x] Set up Fastify server with Socket.IO
 - [ ] Set up Drizzle ORM with database schema and migrations
 - [x] Set up Vite + React for the web app
 
