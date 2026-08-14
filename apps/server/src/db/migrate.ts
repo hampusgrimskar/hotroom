@@ -3,7 +3,7 @@ import { migrate } from "drizzle-orm/postgres-js/migrator";
 import postgres from "postgres";
 
 const DATABASE_URL =
-  process.env.DATABASE_URL || "postgresql://hotroom:hotroom@127.0.0.1:5433/hotroom";
+  process.env.DATABASE_URL || "postgresql://hotseat:hotseat@127.0.0.1:5433/hotseat";
 
 const client = postgres(DATABASE_URL, { max: 1 });
 const db = drizzle(client);

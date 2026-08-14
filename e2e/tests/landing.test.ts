@@ -4,7 +4,7 @@ import { snap } from "../helpers/screenshot";
 test.describe("Landing Page", () => {
   test("displays the landing page with host and join buttons", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByText("🔥 Hotroom")).toBeVisible();
+    await expect(page.getByText("🔥 HotSeat")).toBeVisible();
     await expect(page.getByText("Host a Game")).toBeVisible();
     await expect(page.getByText("Join a Game")).toBeVisible();
 
@@ -24,9 +24,9 @@ test.describe("Landing Page", () => {
     await player1Page.goto("/");
     await player2Page.goto("/");
 
-    await expect(hostPage.getByText("🔥 Hotroom")).toBeVisible();
-    await expect(player1Page.getByText("🔥 Hotroom")).toBeVisible();
-    await expect(player2Page.getByText("🔥 Hotroom")).toBeVisible();
+    await expect(hostPage.getByText("🔥 HotSeat")).toBeVisible();
+    await expect(player1Page.getByText("🔥 HotSeat")).toBeVisible();
+    await expect(player2Page.getByText("🔥 HotSeat")).toBeVisible();
 
     // Screenshot each client for debugging
     await snap(hostPage, "multi-client-host");

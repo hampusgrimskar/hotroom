@@ -1,17 +1,17 @@
 services:
   postgres:
     image: postgres:17-alpine
-    container_name: hotroom-db
+    container_name: hotseat-db
     ports:
       - "5433:5432"
     environment:
-      POSTGRES_USER: hotroom
-      POSTGRES_PASSWORD: hotroom
-      POSTGRES_DB: hotroom
+      POSTGRES_USER: hotseat
+      POSTGRES_PASSWORD: hotseat
+      POSTGRES_DB: hotseat
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U hotroom"]
+      test: ["CMD-SHELL", "pg_isready -U hotseat"]
       interval: 5s
       timeout: 3s
       retries: 5

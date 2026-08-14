@@ -1,12 +1,14 @@
 # TODO
 
-## MVP: Hot Takes
+## MVP: HotSeat
 
 ### Core Infrastructure
 
 - [x] Set up Fastify server with Socket.IO
 - [x] Set up Drizzle ORM with database schema and migrations
 - [x] Set up Vite + React for the web app
+- [ ] Update database schema for HotSeat (cards, player_hands, game_mode, hotseat fields)
+- [ ] Set up Piper TTS on the server
 
 ### Lobby
 
@@ -14,40 +16,60 @@
 - [ ] Join room with code + nickname
 - [ ] Host screen shows connected players
 - [ ] Player screen shows waiting state
+- [ ] Host selects game mode (Normal / Drinking)
 - [ ] Handle player disconnect/reconnect
+
+### Card System
+
+- [ ] Card data model (prompt cards, answer cards, point values, effects)
+- [ ] Seed initial card pack
+- [ ] Deal cards to players (hand management)
+- [ ] Play a card from hand
+- [ ] Card effect system (conditional triggers)
 
 ### Game Loop
 
-- [ ] State machine with phases: lobby, play, vote, reveal, score
-- [ ] Mode defines its own phase flow (e.g., Hot Takes: lobby → vote → reveal → score)
-- [ ] State machine supports arbitrary transitions between phases
-- [ ] Host can start the game
-- [ ] Display phase-appropriate UI on host + player screens
-- [ ] Players submit input during play/vote phase
-- [ ] Timer for active phases
-- [ ] Reveal results with animation on host screen
-- [ ] Next round / end game flow
+- [ ] State machine with phases: lobby, prompt, play, read, vote, reveal, score
+- [ ] Prompt card revealed on host screen
+- [ ] Players choose answer cards from their hand
+- [ ] AI reads answers aloud on host screen (Piper TTS)
+- [ ] Voting (all players except hotseat player)
+- [ ] Tiebreaker roulette wheel (animated, server-determined)
+- [ ] Winner revealed, points awarded
+- [ ] Hotseat rotation logic (winner escapes, loser enters)
+- [ ] First round: randomize hotseat among least-voted players
+
+### Heatmeter
+
+- [ ] Heatmeter increases each round
+- [ ] Visual heatmeter component on host screen
+- [ ] Max heat penalty (points loss in Normal, drink in Drinking mode)
+- [ ] Heatmeter reset after penalty
 
 ### Scoring & End Screen
 
-- [ ] Track votes per player across rounds
-- [ ] Calculate awards ("most controversial," "hive mind," etc.)
+- [ ] Points from card values for round winners
+- [ ] +1 point per round for non-hotseat players
+- [ ] Card effect point modifications
 - [ ] Final scoreboard on host screen
+- [ ] Game end condition (configurable number of rounds or heatmeter cycles)
 
 ### Polish
 
-- [ ] Mobile-first player UI (big tap targets)
-- [ ] Framer Motion animations for reveals
+- [ ] Mobile-first card hand UI (swipeable, big tap targets)
+- [ ] Color-coded answers during read/vote phases
+- [ ] Framer Motion animations (card plays, roulette wheel, heatmeter pulse)
 - [ ] Sound effects on host screen
-- [ ] Prompt pack (initial set of hot takes)
+- [ ] Drinking mode visual theme
 
 ---
 
 ## Stretch Goals
 
-- [ ] Additional game modes
-- [ ] Custom prompt packs (user-generated)
-- [ ] Player avatars / emoji identities
 - [ ] Spectator mode
+- [ ] Custom card packs (user-generated)
+- [ ] Card pack editor
+- [ ] Player avatars / emoji identities
 - [ ] Game history and cross-session leaderboards
-- [ ] Deploy to Fly.io / Railway
+- [ ] Multiple AI voice options
+- [ ] Deploy to Oracle Cloud Free Tier

@@ -1,28 +1,34 @@
-# Hotroom 🔥
+# HotSeat 🔥
 
-A multiplayer party game platform. A host starts a game on a shared screen, players join from their phones with a room code, and the fun begins.
+A multiplayer party card game. Like Cards Against Humanity, but with a hotseat mechanic and AI reading answers out loud.
 
-## Game Mode: Hot Takes
+One player is always in the **hotseat** — they need to win a round to escape. Everyone else earns points just for staying safe. The heatmeter is ticking. Cards have special effects. Things get chaotic.
 
-Players vote on spicy prompts (agree or disagree), results are revealed dramatically on the host screen, and awards are given at the end.
+## Game Modes
+
+- **Normal** — Card effects involve points, penalties, and hotseat swaps
+- **Drinking** — Card effects involve handing out drinks; heatmeter = drink
 
 ## Tech Stack
 
 - **Backend:** Node.js + Fastify + Socket.IO
 - **Frontend:** React + Vite + Tailwind CSS + shadcn/ui + Framer Motion
 - **Database:** PostgreSQL + Drizzle ORM
+- **AI Voice:** Piper TTS
 - **Monorepo:** Turborepo + pnpm
 - **Language:** TypeScript (strict)
+- **Deployment:** Oracle Cloud Free Tier
 
 ## Project Structure
 
 ```
-hotroom/
+hotseat/
 ├── apps/
-│   ├── server/          # Fastify API + WebSocket server
+│   ├── server/          # Fastify API + WebSocket server + TTS
 │   └── web/             # React app (host + player views)
 ├── packages/
 │   └── shared/          # Shared types, game logic, constants
+├── e2e/                 # Playwright E2E tests
 ├── docker-compose.yml   # Local Postgres
 └── turbo.json           # Monorepo task config
 ```
@@ -42,7 +48,10 @@ hotroom/
 pnpm install
 
 # Start Postgres
-docker compose up -d
+docker-compose up -d
+
+# Run migrations
+pnpm --filter @hotseat/server db:migrate
 
 # Run all apps in dev mode
 pnpm dev
@@ -50,15 +59,15 @@ pnpm dev
 
 ### Scripts
 
-| Command                 | Description                        |
-| ----------------------- | ---------------------------------- |
-| `pnpm dev`              | Start all apps in development mode |
-| `pnpm build`            | Build all packages                 |
-| `pnpm lint`             | Lint all packages                  |
-| `pnpm typecheck`        | Type-check all packages            |
-| `pnpm test`             | Run all tests                      |
-| `pnpm run format`       | Format all files with Prettier     |
-| `pnpm run format:check` | Check formatting without writing   |
+| Command           | Description                        |
+| ----------------- | ---------------------------------- |
+| `pnpm dev`        | Start all apps in development mode |
+| `pnpm build`      | Build all packages                 |
+| `pnpm lint`       | Lint all packages                  |
+| `pnpm typecheck`  | Type-check all packages            |
+| `pnpm test`       | Run all tests (unit + E2E)         |
+| `pnpm test:e2e`   | Run E2E tests only                 |
+| `pnpm run format` | Format all files with Prettier     |
 
 ## License
 
