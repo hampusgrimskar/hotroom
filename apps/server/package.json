@@ -7,7 +7,7 @@
     "dev": "echo 'no dev yet'",
     "lint": "eslint src/",
     "typecheck": "tsc --noEmit",
-    "test": "echo 'no tests yet'"
+    "test": "vitest run"
   },
   "dependencies": {
     "@hotroom/shared": "workspace:*"

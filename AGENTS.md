@@ -143,6 +143,20 @@ packages/shared/
 
 **Coverage:** Aim for high coverage on `packages/shared` (game logic is critical). Don't chase 100% everywhere — focus on behavior that matters.
 
+**E2E tests (Playwright):**
+
+- Live in `e2e/tests/` at the root of the monorepo
+- Test full user flows with multiple browser contexts (host + players)
+- Use the `snap()` helper from `e2e/helpers/screenshot.ts` to capture screenshots for debugging
+- Playwright auto-starts the dev server before running
+
+**Agent verification requirements:**
+
+- All code changes MUST be verified with unit tests. If you add or modify logic, add or update the corresponding test.
+- When changes affect user-facing behavior (UI, game flow, socket interactions), add or update E2E tests to verify the full flow works.
+- Run `pnpm test` (unit) and `pnpm test:e2e` (end-to-end) before considering work complete.
+- Use `snap(page, "label")` in E2E tests to capture screenshots when debugging failures.
+
 ### Code Style
 
 **Naming conventions:**
