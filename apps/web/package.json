@@ -3,10 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "build": "echo 'no build yet'",
+    "build": "tsc --build",
     "dev": "echo 'no dev yet'",
-    "lint": "echo 'no lint yet'",
-    "typecheck": "echo 'no typecheck yet'",
+    "lint": "eslint src/",
+    "typecheck": "tsc --noEmit",
     "test": "echo 'no tests yet'"
   },
   "dependencies": {
