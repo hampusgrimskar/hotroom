@@ -1,0 +1,15 @@
+{
+  "name": "@hotroom/web",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "echo 'no build yet'",
+    "dev": "echo 'no dev yet'",
+    "lint": "echo 'no lint yet'",
+    "typecheck": "echo 'no typecheck yet'",
+    "test": "echo 'no tests yet'"
+  },
+  "dependencies": {
+    "@hotroom/shared": "workspace:*"
+  }
+}
