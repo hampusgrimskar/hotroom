@@ -9,8 +9,8 @@ export function App() {
         transition={{ duration: 0.6 }}
         className="text-center"
       >
-        <h1 className="mb-2 text-6xl font-bold tracking-tight">🔥 Hotroom</h1>
-        <p className="mb-8 text-xl text-white/80">The party game that starts arguments</p>
+        <h1 className="mb-2 text-6xl font-bold tracking-tight">🔥 HotSeat</h1>
+        <p className="mb-8 text-xl text-white/80">Roast your friends. Escape the seat.</p>
 
         <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
           <button className="rounded-xl bg-white px-8 py-4 text-lg font-semibold text-orange-600 shadow-lg transition hover:scale-105 hover:shadow-xl">

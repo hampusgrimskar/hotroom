@@ -17,7 +17,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "pnpm --filter @hotroom/web dev",
+    command: "pnpm --filter @hotseat/web dev",
     port: 3000,
     cwd: "..",
     reuseExistingServer: !process.env.CI,

@@ -5,6 +5,6 @@ export default defineConfig({
   out: "./drizzle",
   dialect: "postgresql",
   dbCredentials: {
-    url: process.env.DATABASE_URL || "postgresql://hotroom:hotroom@127.0.0.1:5433/hotroom",
+    url: process.env.DATABASE_URL || "postgresql://hotseat:hotseat@127.0.0.1:5433/hotseat",
   },
 });

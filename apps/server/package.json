@@ -1,5 +1,5 @@
 {
-  "name": "@hotroom/server",
+  "name": "@hotseat/server",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@fastify/cors": "^11.3.0",
-    "@hotroom/shared": "workspace:*",
+    "@hotseat/shared": "workspace:*",
     "drizzle-orm": "^0.45.2",
     "fastify": "^5.11.3",
     "postgres": "^3.4.9",
