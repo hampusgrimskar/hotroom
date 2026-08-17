@@ -1,9 +1,283 @@
 {
-  "id": "b911c727-9022-43a3-8299-97d822597d0b",
+  "id": "528ceef9-2d7e-41ee-b213-5b31e9b6ac7c",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
+    "public.cards": {
+      "name": "cards",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "type": {
+          "name": "type",
+          "type": "card_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "text": {
+          "name": "text",
+          "type": "varchar(512)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "point_value": {
+          "name": "point_value",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "effect_type": {
+          "name": "effect_type",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "effect_description": {
+          "name": "effect_description",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "effect_action": {
+          "name": "effect_action",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "mode": {
+          "name": "mode",
+          "type": "card_mode",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'both'"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.games": {
+      "name": "games",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "code": {
+          "name": "code",
+          "type": "varchar(4)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "state": {
+          "name": "state",
+          "type": "game_state",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'lobby'"
+        },
+        "game_mode": {
+          "name": "game_mode",
+          "type": "game_mode",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'normal'"
+        },
+        "round_number": {
+          "name": "round_number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "max_rounds": {
+          "name": "max_rounds",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 10
+        },
+        "current_prompt_card_id": {
+          "name": "current_prompt_card_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hotseat_player_id": {
+          "name": "hotseat_player_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "heatmeter_value": {
+          "name": "heatmeter_value",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "heatmeter_max": {
+          "name": "heatmeter_max",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 5
+        },
+        "answers": {
+          "name": "answers",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'[]'::jsonb"
+        },
+        "votes": {
+          "name": "votes",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'[]'::jsonb"
+        },
+        "used_prompts": {
+          "name": "used_prompts",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'[]'::jsonb"
+        },
+        "deck": {
+          "name": "deck",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'[]'::jsonb"
+        },
+        "round_winner_id": {
+          "name": "round_winner_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "game_winner_id": {
+          "name": "game_winner_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "games_code_unique": {
+          "name": "games_code_unique",
+          "nullsNotDistinct": false,
+          "columns": ["code"]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.player_hands": {
+      "name": "player_hands",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "player_id": {
+          "name": "player_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "card_id": {
+          "name": "card_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "game_id": {
+          "name": "game_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "played": {
+          "name": "played",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "player_hands_player_id_players_id_fk": {
+          "name": "player_hands_player_id_players_id_fk",
+          "tableFrom": "player_hands",
+          "tableTo": "players",
+          "columnsFrom": ["player_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "player_hands_card_id_cards_id_fk": {
+          "name": "player_hands_card_id_cards_id_fk",
+          "tableFrom": "player_hands",
+          "tableTo": "cards",
+          "columnsFrom": ["card_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "player_hands_game_id_games_id_fk": {
+          "name": "player_hands_game_id_games_id_fk",
+          "tableFrom": "player_hands",
+          "tableTo": "games",
+          "columnsFrom": ["game_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.players": {
       "name": "players",
       "schema": "",
@@ -15,8 +289,8 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "room_id": {
-          "name": "room_id",
+        "game_id": {
+          "name": "game_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
@@ -47,6 +321,33 @@
           "notNull": true,
           "default": 1
         },
+        "points": {
+          "name": "points",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "win_streak": {
+          "name": "win_streak",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "color": {
+          "name": "color",
+          "type": "varchar(16)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "active_effects": {
+          "name": "active_effects",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'[]'::jsonb"
+        },
         "joined_at": {
           "name": "joined_at",
           "type": "timestamp",
@@ -57,178 +358,11 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "players_room_id_rooms_id_fk": {
-          "name": "players_room_id_rooms_id_fk",
+        "players_game_id_games_id_fk": {
+          "name": "players_game_id_games_id_fk",
           "tableFrom": "players",
-          "tableTo": "rooms",
-          "columnsFrom": ["room_id"],
-          "columnsTo": ["id"],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.rooms": {
-      "name": "rooms",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "code": {
-          "name": "code",
-          "type": "varchar(4)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "status": {
-          "name": "status",
-          "type": "room_status",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'lobby'"
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "rooms_code_unique": {
-          "name": "rooms_code_unique",
-          "nullsNotDistinct": false,
-          "columns": ["code"]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.rounds": {
-      "name": "rounds",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "room_id": {
-          "name": "room_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "prompt": {
-          "name": "prompt",
-          "type": "varchar(512)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "phase": {
-          "name": "phase",
-          "type": "round_phase",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'vote'"
-        },
-        "round_number": {
-          "name": "round_number",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "rounds_room_id_rooms_id_fk": {
-          "name": "rounds_room_id_rooms_id_fk",
-          "tableFrom": "rounds",
-          "tableTo": "rooms",
-          "columnsFrom": ["room_id"],
-          "columnsTo": ["id"],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.votes": {
-      "name": "votes",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "round_id": {
-          "name": "round_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "player_id": {
-          "name": "player_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "choice": {
-          "name": "choice",
-          "type": "varchar(16)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "submitted_at": {
-          "name": "submitted_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "votes_round_id_rounds_id_fk": {
-          "name": "votes_round_id_rounds_id_fk",
-          "tableFrom": "votes",
-          "tableTo": "rounds",
-          "columnsFrom": ["round_id"],
-          "columnsTo": ["id"],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "votes_player_id_players_id_fk": {
-          "name": "votes_player_id_players_id_fk",
-          "tableFrom": "votes",
-          "tableTo": "players",
-          "columnsFrom": ["player_id"],
+          "tableTo": "games",
+          "columnsFrom": ["game_id"],
           "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
@@ -242,15 +376,25 @@
     }
   },
   "enums": {
-    "public.room_status": {
-      "name": "room_status",
+    "public.card_mode": {
+      "name": "card_mode",
       "schema": "public",
-      "values": ["lobby", "playing", "finished"]
+      "values": ["normal", "drinking", "both"]
     },
-    "public.round_phase": {
-      "name": "round_phase",
+    "public.card_type": {
+      "name": "card_type",
       "schema": "public",
-      "values": ["play", "vote", "reveal"]
+      "values": ["prompt", "answer"]
+    },
+    "public.game_mode": {
+      "name": "game_mode",
+      "schema": "public",
+      "values": ["normal", "drinking"]
+    },
+    "public.game_state": {
+      "name": "game_state",
+      "schema": "public",
+      "values": ["lobby", "prompt", "play", "read", "vote", "tiebreaker", "reveal", "results"]
     }
   },
   "schemas": {},

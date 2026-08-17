@@ -3,7 +3,7 @@ services:
     image: postgres:17-alpine
     container_name: hotseat-db
     ports:
-      - "5433:5432"
+      - "5434:5432"
     environment:
       POSTGRES_USER: hotseat
       POSTGRES_PASSWORD: hotseat

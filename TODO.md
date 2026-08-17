@@ -7,7 +7,7 @@
 - [x] Set up Fastify server with Socket.IO
 - [x] Set up Drizzle ORM with database schema and migrations
 - [x] Set up Vite + React for the web app
-- [ ] Update database schema for HotSeat (cards, player_hands, game_mode, hotseat fields)
+- [x] Update database schema for HotSeat (cards, player_hands, game_mode, hotseat fields)
 - [ ] Set up Piper TTS on the server
 
 ### Lobby
