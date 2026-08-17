@@ -10,6 +10,24 @@ jobs:
   ci:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: hotseat
+          POSTGRES_PASSWORD: hotseat
+          POSTGRES_DB: hotseat
+        ports:
+          - 5434:5432
+        options: >-
+          --health-cmd "pg_isready -U hotseat"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://hotseat:hotseat@127.0.0.1:5434/hotseat
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -45,6 +63,9 @@ jobs:
 
       - name: Typecheck
         run: pnpm typecheck
+
+      - name: Run migrations
+        run: pnpm --filter @hotseat/server db:migrate
 
       - name: Test
         run: pnpm test
