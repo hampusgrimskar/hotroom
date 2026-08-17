@@ -6,12 +6,12 @@
 
 #### Lobby
 
-- [ ] Create game (generates 4-letter code)
-- [ ] Join game with code + nickname
-- [ ] Host screen shows connected players
-- [ ] Player screen shows waiting state
+- [x] Create game (generates 4-letter code)
+- [x] Join game with code + nickname
+- [x] Host screen shows connected players
+- [x] Player screen shows waiting state
 - [ ] Host selects game mode (Normal / Drinking)
-- [ ] Host starts the game
+- [x] Host starts the game
 
 #### Deployment
 
