@@ -152,3 +152,7 @@ vite.config.ts.timestamp-*
 e2e/results/
 e2e/screenshots/
 e2e/test-results/
+# Review artifacts
+REVIEW.md
+REVIEW_FINDINGS.md
+REVIEW_SKIPPED.md
