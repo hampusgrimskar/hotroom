@@ -12,11 +12,8 @@ export interface SocketData {
 function sanitizePlayersForClient<T extends { socketId: unknown }>(
   players: T[],
 ): Omit<T, "socketId">[] {
-  return players.map((player) => {
-    const { socketId, ...rest } = player;
-    void socketId;
-    return rest as Omit<T, "socketId">;
-  });
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  return players.map(({ socketId, ...rest }) => rest as Omit<T, "socketId">);
 }
 
 export function registerLobbyHandlers(
@@ -67,8 +64,8 @@ export function registerLobbyHandlers(
         return;
       }
 
-      if (!code || !nickname) {
-        callback({ success: false, error: "Code and nickname are required" });
+      if (!nickname || typeof nickname !== "string") {
+        callback({ success: false, error: "Nickname is required" });
         return;
       }
 
