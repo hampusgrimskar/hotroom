@@ -1,20 +1,13 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { socket } from "../lib/socket";
-
-interface Player {
-  id: string;
-  nickname: string;
-  color: string;
-  connected: number;
-}
-
-interface Game {
-  id: string;
-  code: string;
-}
+import { useSocket } from "../lib/socket-context";
+import { SocketEvents } from "@hotseat/shared";
+import type { Player, Game } from "@hotseat/shared";
 
 export function HostLobby() {
+  const socket = useSocket();
+  const navigate = useNavigate();
   const [game, setGame] = useState<Game | null>(null);
   const [players, setPlayers] = useState<Player[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -23,7 +16,7 @@ export function HostLobby() {
     socket.connect();
 
     socket.emit(
-      "host:create",
+      SocketEvents.HOST_CREATE,
       (response: { success: boolean; game?: Game; players?: Player[]; error?: string }) => {
         if (response.success && response.game) {
           setGame(response.game);
@@ -34,18 +27,23 @@ export function HostLobby() {
       },
     );
 
-    socket.on("players:updated", (updatedPlayers: Player[]) => {
+    socket.on(SocketEvents.PLAYERS_UPDATED, (updatedPlayers: Player[]) => {
       setPlayers(updatedPlayers);
     });
 
+    socket.on(SocketEvents.GAME_STARTED, () => {
+      navigate("/game");
+    });
+
     return () => {
-      socket.off("players:updated");
+      socket.off(SocketEvents.PLAYERS_UPDATED);
+      socket.off(SocketEvents.GAME_STARTED);
       socket.disconnect();
     };
-  }, []);
+  }, [socket, navigate]);
 
   const handleStart = () => {
-    socket.emit("host:start", (response: { success: boolean; error?: string }) => {
+    socket.emit(SocketEvents.HOST_START, (response: { success: boolean; error?: string }) => {
       if (!response.success) {
         setError(response.error || "Failed to start game");
       }

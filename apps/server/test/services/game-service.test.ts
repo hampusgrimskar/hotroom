@@ -1,15 +1,18 @@
 import { describe, it, expect, beforeEach, afterAll } from "vitest";
-import { db } from "../src/db";
-import { games, players } from "../src/db/schema";
-import {
+import { db } from "../../src/db";
+import { games, players } from "../../src/db/schema";
+import { createGameService } from "../../src/services/game-service";
+import { eq } from "drizzle-orm";
+
+const gameService = createGameService(db);
+const {
   createGame,
   findGameByCode,
   addPlayer,
   getPlayersInGame,
   disconnectPlayer,
   updateGameState,
-} from "../src/services/game-service";
-import { eq } from "drizzle-orm";
+} = gameService;
 
 describe("game-service", () => {
   beforeEach(async () => {

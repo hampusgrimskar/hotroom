@@ -1,31 +1,30 @@
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { socket } from "../lib/socket";
-
-interface Player {
-  id: string;
-  nickname: string;
-  color: string;
-  connected: number;
-}
+import { useSocket } from "../lib/socket-context";
+import { SocketEvents } from "@hotseat/shared";
+import type { Player } from "@hotseat/shared";
 
 export function WaitingRoom() {
-  const [players, setPlayers] = useState<Player[]>([]);
+  const socket = useSocket();
+  const location = useLocation();
+  const initialPlayers = (location.state as { players?: Player[] })?.players || [];
+  const [players, setPlayers] = useState<Player[]>(initialPlayers);
 
   useEffect(() => {
-    socket.on("players:updated", (updatedPlayers: Player[]) => {
+    socket.on(SocketEvents.PLAYERS_UPDATED, (updatedPlayers: Player[]) => {
       setPlayers(updatedPlayers);
     });
 
-    socket.on("game:started", () => {
+    socket.on(SocketEvents.GAME_STARTED, () => {
       // TODO: navigate to game screen
     });
 
     return () => {
-      socket.off("players:updated");
-      socket.off("game:started");
+      socket.off(SocketEvents.PLAYERS_UPDATED);
+      socket.off(SocketEvents.GAME_STARTED);
     };
-  }, []);
+  }, [socket]);
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-orange-500 to-red-600 p-4 text-white">

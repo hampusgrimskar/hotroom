@@ -1,6 +1,9 @@
 import { eq } from "drizzle-orm";
-import { db } from "../db";
 import { games, players } from "../db/schema";
+import { PLAYER_COLORS } from "@hotseat/shared";
+import type { db as DbInstance } from "../db";
+
+const MAX_CODE_GENERATION_ATTEMPTS = 10;
 
 function generateCode(): string {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ";
@@ -11,98 +14,98 @@ function generateCode(): string {
   return code;
 }
 
-const PLAYER_COLORS = [
-  "#FF6B6B",
-  "#4ECDC4",
-  "#45B7D1",
-  "#96CEB4",
-  "#FFEAA7",
-  "#DDA0DD",
-  "#98D8C8",
-  "#F7DC6F",
-];
+export function createGameService(db: typeof DbInstance) {
+  async function createGame() {
+    let attempts = 0;
 
-export async function createGame() {
-  let code = generateCode();
-  let attempts = 0;
+    while (attempts < MAX_CODE_GENERATION_ATTEMPTS) {
+      const code = generateCode();
+      try {
+        const [game] = await db.insert(games).values({ code }).returning();
+        if (!game) {
+          throw new Error("Failed to insert game");
+        }
+        return game;
+      } catch (err: unknown) {
+        // Catch unique constraint violation and retry
+        const error = err as { code?: string };
+        if (error.code === "23505") {
+          attempts++;
+          continue;
+        }
+        throw err;
+      }
+    }
 
-  while (attempts < 10) {
-    const existing = await db.query.games.findFirst({
-      where: eq(games.code, code),
-    });
-    if (!existing) break;
-    code = generateCode();
-    attempts++;
-  }
-
-  if (attempts >= 10) {
     throw new Error("Failed to generate unique game code");
   }
 
-  const [game] = await db.insert(games).values({ code }).returning();
-  if (!game) {
-    throw new Error("Failed to insert game");
-  }
-  return game;
-}
-
-export async function findGameByCode(code: string) {
-  return db.query.games.findFirst({
-    where: eq(games.code, code.toUpperCase()),
-  });
-}
-
-export async function addPlayer(
-  gameId: string,
-  nickname: string,
-  socketId: string,
-  isHost: number = 0,
-) {
-  const existingPlayers = await db.query.players.findMany({
-    where: eq(players.gameId, gameId),
-  });
-
-  const colorIndex = existingPlayers.length % PLAYER_COLORS.length;
-  const color = PLAYER_COLORS[colorIndex];
-
-  const [player] = await db
-    .insert(players)
-    .values({
-      gameId,
-      nickname,
-      socketId,
-      isHost,
-      color,
-    })
-    .returning();
-
-  if (!player) {
-    throw new Error("Failed to insert player");
+  async function findGameByCode(code: string) {
+    return db.query.games.findFirst({
+      where: eq(games.code, code.toUpperCase()),
+    });
   }
 
-  return player;
+  async function addPlayer(gameId: string, nickname: string, socketId: string, isHost: number = 0) {
+    const existingPlayers = await db.query.players.findMany({
+      where: eq(players.gameId, gameId),
+    });
+
+    // Colors wrap around if more players than colors (guarded by MAX_PLAYERS check in handler)
+    const colorIndex = existingPlayers.length % PLAYER_COLORS.length;
+    const color = PLAYER_COLORS[colorIndex];
+
+    const [player] = await db
+      .insert(players)
+      .values({
+        gameId,
+        nickname,
+        socketId,
+        isHost,
+        color,
+      })
+      .returning();
+
+    if (!player) {
+      throw new Error("Failed to insert player");
+    }
+
+    return player;
+  }
+
+  async function getPlayersInGame(gameId: string) {
+    return db.query.players.findMany({
+      where: eq(players.gameId, gameId),
+    });
+  }
+
+  async function updatePlayerSocket(playerId: string, socketId: string) {
+    await db.update(players).set({ socketId, connected: 1 }).where(eq(players.id, playerId));
+  }
+
+  async function disconnectPlayer(socketId: string) {
+    await db
+      .update(players)
+      .set({ connected: 0, socketId: null })
+      .where(eq(players.socketId, socketId));
+  }
+
+  async function updateGameState(
+    gameId: string,
+    state: "lobby" | "prompt" | "play" | "read" | "vote" | "tiebreaker" | "reveal" | "results",
+  ) {
+    await db.update(games).set({ state }).where(eq(games.id, gameId));
+  }
+
+  return {
+    createGame,
+    findGameByCode,
+    addPlayer,
+    getPlayersInGame,
+    updatePlayerSocket,
+    disconnectPlayer,
+    updateGameState,
+  };
 }
 
-export async function getPlayersInGame(gameId: string) {
-  return db.query.players.findMany({
-    where: eq(players.gameId, gameId),
-  });
-}
-
-export async function updatePlayerSocket(playerId: string, socketId: string) {
-  await db.update(players).set({ socketId, connected: 1 }).where(eq(players.id, playerId));
-}
-
-export async function disconnectPlayer(socketId: string) {
-  await db
-    .update(players)
-    .set({ connected: 0, socketId: null })
-    .where(eq(players.socketId, socketId));
-}
-
-export async function updateGameState(
-  gameId: string,
-  state: "lobby" | "prompt" | "play" | "read" | "vote" | "tiebreaker" | "reveal" | "results",
-) {
-  await db.update(games).set({ state }).where(eq(games.id, gameId));
-}
+export type GameService = ReturnType<typeof createGameService>;

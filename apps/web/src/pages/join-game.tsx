@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { socket } from "../lib/socket";
+import { useSocket } from "../lib/socket-context";
+import { SocketEvents } from "@hotseat/shared";
+import type { Player, Game } from "@hotseat/shared";
 
 export function JoinGame() {
+  const socket = useSocket();
   const navigate = useNavigate();
   const [code, setCode] = useState("");
   const [nickname, setNickname] = useState("");
@@ -22,12 +25,18 @@ export function JoinGame() {
     socket.connect();
 
     socket.emit(
-      "player:join",
+      SocketEvents.PLAYER_JOIN,
       { code: code.toUpperCase(), nickname },
-      (response: { success: boolean; error?: string }) => {
+      (response: {
+        success: boolean;
+        game?: Game;
+        player?: Player;
+        players?: Player[];
+        error?: string;
+      }) => {
         setLoading(false);
         if (response.success) {
-          navigate("/waiting");
+          navigate("/waiting", { state: { players: response.players || [] } });
         } else {
           setError(response.error || "Failed to join game");
         }

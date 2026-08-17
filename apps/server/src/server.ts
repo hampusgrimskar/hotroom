@@ -2,6 +2,8 @@ import Fastify from "fastify";
 import cors from "@fastify/cors";
 import { Server } from "socket.io";
 import { registerSocketHandlers } from "./socket";
+import { createGameService } from "./services/game-service";
+import { db } from "./db";
 
 export async function buildServer() {
   const fastify = Fastify({ logger: true });
@@ -16,7 +18,8 @@ export async function buildServer() {
     },
   });
 
-  registerSocketHandlers(io, fastify.log);
+  const gameService = createGameService(db);
+  registerSocketHandlers(io, fastify.log, gameService);
 
   fastify.get("/health", async () => {
     return { status: "ok" };
