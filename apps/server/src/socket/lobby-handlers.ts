@@ -8,7 +8,7 @@ export interface SocketData {
   playerId: string;
 }
 
-/** Strip socketId from player data before sending to clients */
+/** Strip socketId from player data before sending to clients (security: prevents leaking internal connection identifiers) */
 function sanitizePlayersForClient<T extends { socketId: unknown }>(
   players: T[],
 ): Omit<T, "socketId">[] {
@@ -56,11 +56,16 @@ export function registerLobbyHandlers(
     if (typeof callback !== "function") return;
     try {
       if (!data || typeof data !== "object") {
-        if (typeof callback === "function") callback({ success: false, error: "Invalid payload" });
+        callback({ success: false, error: "Invalid payload" });
         return;
       }
 
       const { code, nickname } = data;
+
+      if (typeof code !== "string" || code.length !== 4) {
+        callback({ success: false, error: "Invalid room code" });
+        return;
+      }
 
       if (!code || !nickname) {
         callback({ success: false, error: "Code and nickname are required" });

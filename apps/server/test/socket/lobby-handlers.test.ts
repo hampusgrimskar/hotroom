@@ -125,7 +125,7 @@ describe("lobby-handlers", () => {
     expect(result.error).toBe("Game not found");
   });
 
-  it("player:join with missing code/nickname returns error 'Code and nickname are required'", async () => {
+  it("player:join with missing code/nickname returns error 'Invalid room code'", async () => {
     const client = createClient();
     await waitForConnect(client);
 
@@ -136,7 +136,7 @@ describe("lobby-handlers", () => {
     });
 
     expect(result.success).toBe(false);
-    expect(result.error).toBe("Code and nickname are required");
+    expect(result.error).toBe("Invalid room code");
   });
 
   it("player:join with null/invalid data returns error 'Invalid payload'", async () => {
@@ -330,6 +330,125 @@ describe("lobby-handlers", () => {
 
     expect(result.success).toBe(false);
     expect(result.error).toBe("Need at least 2 players to start");
+  });
+
+  it("player:join rejects when game already started", async () => {
+    const hostClient = createClient();
+    await waitForConnect(hostClient);
+
+    const createResult = await new Promise<Record<string, unknown>>((resolve) => {
+      hostClient.emit("host:create", (res: Record<string, unknown>) => {
+        resolve(res);
+      });
+    });
+    const game = createResult.game as { code: string };
+
+    const playerClient = createClient();
+    await waitForConnect(playerClient);
+
+    await new Promise<Record<string, unknown>>((resolve) => {
+      playerClient.emit(
+        "player:join",
+        { code: game.code, nickname: "Alice" },
+        (res: Record<string, unknown>) => {
+          resolve(res);
+        },
+      );
+    });
+
+    // Start the game
+    await new Promise<Record<string, unknown>>((resolve) => {
+      hostClient.emit("host:start", (res: Record<string, unknown>) => {
+        resolve(res);
+      });
+    });
+
+    // Try to join after game started
+    const lateClient = createClient();
+    await waitForConnect(lateClient);
+
+    const result = await new Promise<Record<string, unknown>>((resolve) => {
+      lateClient.emit(
+        "player:join",
+        { code: game.code, nickname: "Bob" },
+        (res: Record<string, unknown>) => {
+          resolve(res);
+        },
+      );
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error).toBe("Game already in progress");
+  });
+
+  it("player:join rejects nickname longer than 32 characters", async () => {
+    const hostClient = createClient();
+    await waitForConnect(hostClient);
+
+    const createResult = await new Promise<Record<string, unknown>>((resolve) => {
+      hostClient.emit("host:create", (res: Record<string, unknown>) => {
+        resolve(res);
+      });
+    });
+    const game = createResult.game as { code: string };
+
+    const playerClient = createClient();
+    await waitForConnect(playerClient);
+
+    const longNickname = "A".repeat(33);
+    const result = await new Promise<Record<string, unknown>>((resolve) => {
+      playerClient.emit(
+        "player:join",
+        { code: game.code, nickname: longNickname },
+        (res: Record<string, unknown>) => {
+          resolve(res);
+        },
+      );
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error).toBe("Nickname too long (max 32 characters)");
+  });
+
+  it("player:join rejects duplicate nickname case-insensitively", async () => {
+    const hostClient = createClient();
+    await waitForConnect(hostClient);
+
+    const createResult = await new Promise<Record<string, unknown>>((resolve) => {
+      hostClient.emit("host:create", (res: Record<string, unknown>) => {
+        resolve(res);
+      });
+    });
+    const game = createResult.game as { code: string };
+
+    const player1 = createClient();
+    await waitForConnect(player1);
+
+    await new Promise<Record<string, unknown>>((resolve) => {
+      player1.emit(
+        "player:join",
+        { code: game.code, nickname: "Alice" },
+        (res: Record<string, unknown>) => {
+          resolve(res);
+        },
+      );
+    });
+
+    const player2 = createClient();
+    await waitForConnect(player2);
+
+    const result = await new Promise<Record<string, unknown>>((resolve) => {
+      player2.emit(
+        "player:join",
+        { code: game.code, nickname: "aLiCe" },
+        (res: Record<string, unknown>) => {
+          resolve(res);
+        },
+      );
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error).toBe("Nickname already taken");
   });
 
   it("disconnect broadcasts updated player list with connected=0", async () => {
