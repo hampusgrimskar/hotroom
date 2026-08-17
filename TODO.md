@@ -2,65 +2,82 @@
 
 ## MVP: HotSeat
 
-### Core Infrastructure
+### Phase 1: Playable Skeleton
 
-- [x] Set up Fastify server with Socket.IO
-- [x] Set up Drizzle ORM with database schema and migrations
-- [x] Set up Vite + React for the web app
-- [x] Update database schema for HotSeat (cards, player_hands, game_mode, hotseat fields)
-- [ ] Set up Piper TTS on the server
+#### Lobby
 
-### Lobby
-
-- [ ] Create room (generates 4-letter code)
-- [ ] Join room with code + nickname
+- [ ] Create game (generates 4-letter code)
+- [ ] Join game with code + nickname
 - [ ] Host screen shows connected players
 - [ ] Player screen shows waiting state
 - [ ] Host selects game mode (Normal / Drinking)
-- [ ] Handle player disconnect/reconnect
+- [ ] Host starts the game
 
-### Card System
+#### Deployment
 
-- [ ] Card data model (prompt cards, answer cards, point values, effects)
-- [ ] Seed initial card pack
-- [ ] Deal cards to players (hand management)
-- [ ] Play a card from hand
-- [ ] Card effect system (conditional triggers)
+- [ ] Set up Oracle Cloud Free Tier instance
+- [ ] Dockerize server and web app
+- [ ] Set up CI/CD pipeline (push to deploy)
+- [ ] Configure domain / HTTPS
+- [ ] Test lobby on real phones over network
 
-### Game Loop
+#### State Machine
 
-- [ ] State machine with phases: lobby, prompt, play, read, vote, reveal, score
-- [ ] Prompt card revealed on host screen
-- [ ] Players choose answer cards from their hand
-- [ ] AI reads answers aloud on host screen (Piper TTS)
-- [ ] Voting (all players except hotseat player)
-- [ ] Tiebreaker roulette wheel (animated, server-determined)
-- [ ] Winner revealed, points awarded
-- [ ] Hotseat rotation logic (winner escapes, loser enters)
-- [ ] First round: randomize hotseat among least-voted players
+- [ ] Core state transitions: lobby → prompt → play → vote → reveal → next round
+- [ ] Server-authoritative state management
+- [ ] Broadcast state changes to all clients via Socket.IO
 
-### Heatmeter
+#### Card System (basic)
 
-- [ ] Heatmeter increases each round
-- [ ] Visual heatmeter component on host screen
-- [ ] Max heat penalty (points loss in Normal, drink in Drinking mode)
-- [ ] Heatmeter reset after penalty
+- [ ] Seed initial card pack (prompts + answers, no effects yet)
+- [ ] Deal cards to players on game start
+- [ ] Players choose and play a card from their hand
+- [ ] Draw new card after playing
 
-### Scoring & End Screen
+#### Voting + Winner
 
-- [ ] Points from card values for round winners
+- [ ] All players except hotseat player vote
+- [ ] Determine winner (most votes)
+- [ ] Tiebreaker logic (server picks winner, no animation yet)
+- [ ] Award points based on card value
+
+#### Hotseat Rotation
+
+- [ ] First round: randomize initial hotseat player
+- [ ] Winner escapes the hotseat
+- [ ] Loser (or random non-winner) enters the hotseat
 - [ ] +1 point per round for non-hotseat players
-- [ ] Card effect point modifications
-- [ ] Final scoreboard on host screen
-- [ ] Game end condition (configurable number of rounds or heatmeter cycles)
 
-### Polish
+#### Scoring + Game End
+
+- [ ] Track points on players
+- [ ] End game after max_rounds
+- [ ] Show results screen with final scoreboard
+- [ ] Host can return to lobby for new game
+
+---
+
+### Phase 2: Make It Feel Good
 
 - [ ] Mobile-first card hand UI (swipeable, big tap targets)
-- [ ] Color-coded answers during read/vote phases
-- [ ] Framer Motion animations (card plays, roulette wheel, heatmeter pulse)
-- [ ] Sound effects on host screen
+- [ ] Color-coded answers during vote phase
+- [ ] Roulette wheel animation for tiebreakers (Framer Motion)
+- [ ] Heatmeter visual component on host screen
+- [ ] Heatmeter increases each round, penalty at max
+- [ ] Heatmeter reset after penalty
+- [ ] Framer Motion animations (card plays, reveals, hotseat fire)
+- [ ] Win streak animations
+
+---
+
+### Phase 3: The Wow Factor
+
+- [ ] Piper TTS: AI reads answers aloud on host screen
+- [ ] Card effects system (on_win, on_lose, on_hotseat triggers)
+- [ ] Drinking mode effects (hand out drinks, drink on heatmeter penalty)
 - [ ] Drinking mode visual theme
+- [ ] Sound effects on host screen
+- [ ] Player disconnect/reconnect handling
 
 ---
 
@@ -72,4 +89,3 @@
 - [ ] Player avatars / emoji identities
 - [ ] Game history and cross-session leaderboards
 - [ ] Multiple AI voice options
-- [ ] Deploy to Oracle Cloud Free Tier
