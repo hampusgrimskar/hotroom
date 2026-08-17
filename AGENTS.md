@@ -259,7 +259,23 @@ Rules:
 
 - Use lowercase kebab-case for the description
 - Keep it short but descriptive
-- `main` is the default branch — never push directly, always use PRs
+- `master` is the default branch — never push directly, always use PRs
+
+### Pull Requests
+
+After pushing a branch, always create a PR using the `gh` CLI:
+
+```bash
+gh pr create --title "type: short description" --body "Details here"
+```
+
+Rules:
+
+- PR title follows the same conventional commit format as branch names (e.g., `feat: lobby system`, `fix: reconnection race condition`)
+- Keep titles under 70 characters
+- Body should briefly describe what changed and why
+- Wait for CI to pass before merging
+- Use `gh pr merge --squash` to merge when approved
 
 ## Stretch Goals
 
