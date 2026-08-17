@@ -139,6 +139,13 @@ export function registerLobbyHandlers(
         return;
       }
 
+      // Verify game is still in lobby state (prevents double-start from retries)
+      const game = await gameService.getGameById(gameId);
+      if (!game || game.state !== "lobby") {
+        callback({ success: false, error: "Game already started" });
+        return;
+      }
+
       if (players.length < 2) {
         callback({ success: false, error: "Need at least 2 players to start" });
         return;

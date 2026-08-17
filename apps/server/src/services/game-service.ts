@@ -61,6 +61,12 @@ export function createGameService(db: typeof DbInstance) {
     });
   }
 
+  async function getGameById(gameId: string) {
+    return db.query.games.findFirst({
+      where: eq(games.id, gameId),
+    });
+  }
+
   async function addPlayer(gameId: string, nickname: string, socketId: string, isHost: number = 0) {
     const existingPlayers = await db.query.players.findMany({
       where: eq(players.gameId, gameId),
@@ -112,6 +118,7 @@ export function createGameService(db: typeof DbInstance) {
   return {
     createGame,
     findGameByCode,
+    getGameById,
     addPlayer,
     getPlayersInGame,
     updatePlayerSocket,
