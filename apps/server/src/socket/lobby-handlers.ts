@@ -3,12 +3,29 @@ import type { FastifyBaseLogger } from "fastify";
 import type { GameService } from "../services/game-service";
 import { SocketEvents, MAX_PLAYERS } from "@hotseat/shared";
 
+export interface SocketData {
+  gameId: string;
+  playerId: string;
+}
+
+/** Strip socketId from player data before sending to clients */
+function sanitizePlayersForClient<T extends { socketId: unknown }>(
+  players: T[],
+): Omit<T, "socketId">[] {
+  return players.map((player) => {
+    const { socketId, ...rest } = player;
+    void socketId;
+    return rest as Omit<T, "socketId">;
+  });
+}
+
 export function registerLobbyHandlers(
   socket: Socket,
   log: FastifyBaseLogger,
   gameService: GameService,
 ) {
   socket.on(SocketEvents.HOST_CREATE, async (callback) => {
+    if (typeof callback !== "function") return;
     try {
       const game = await gameService.createGame();
       if (!game) {
@@ -23,10 +40,10 @@ export function registerLobbyHandlers(
       }
 
       socket.join(game.id);
-      socket.data = { gameId: game.id, playerId: player.id };
+      (socket.data as SocketData) = { gameId: game.id, playerId: player.id };
 
       const playerList = await gameService.getPlayersInGame(game.id);
-      callback({ success: true, game, player, players: playerList });
+      callback({ success: true, game, player, players: sanitizePlayersForClient(playerList) });
 
       log.info({ gameId: game.id, code: game.code }, "Game created");
     } catch (err) {
@@ -36,6 +53,7 @@ export function registerLobbyHandlers(
   });
 
   socket.on(SocketEvents.PLAYER_JOIN, async (data, callback) => {
+    if (typeof callback !== "function") return;
     try {
       const { code, nickname } = data;
 
@@ -84,12 +102,12 @@ export function registerLobbyHandlers(
       }
 
       socket.join(game.id);
-      socket.data = { gameId: game.id, playerId: player.id };
+      (socket.data as SocketData) = { gameId: game.id, playerId: player.id };
 
       const playerList = await gameService.getPlayersInGame(game.id);
-      callback({ success: true, game, player, players: playerList });
+      callback({ success: true, game, player, players: sanitizePlayersForClient(playerList) });
 
-      socket.to(game.id).emit(SocketEvents.PLAYERS_UPDATED, playerList);
+      socket.to(game.id).emit(SocketEvents.PLAYERS_UPDATED, sanitizePlayersForClient(playerList));
 
       log.info({ gameId: game.id, nickname }, "Player joined");
     } catch (err) {
@@ -99,8 +117,9 @@ export function registerLobbyHandlers(
   });
 
   socket.on(SocketEvents.HOST_START, async (callback) => {
+    if (typeof callback !== "function") return;
     try {
-      const { gameId, playerId } = socket.data || {};
+      const { gameId, playerId } = (socket.data as SocketData) || {};
       if (!gameId || !playerId) {
         callback({ success: false, error: "Not in a game" });
         return;
@@ -134,11 +153,11 @@ export function registerLobbyHandlers(
     try {
       log.info({ socketId: socket.id, reason }, "Client disconnected");
 
-      const { gameId } = socket.data || {};
+      const { gameId } = (socket.data as SocketData) || {};
       if (gameId) {
         await gameService.disconnectPlayer(socket.id);
         const players = await gameService.getPlayersInGame(gameId);
-        socket.to(gameId).emit(SocketEvents.PLAYERS_UPDATED, players);
+        socket.to(gameId).emit(SocketEvents.PLAYERS_UPDATED, sanitizePlayersForClient(players));
       }
     } catch (err) {
       log.error(err, "Error handling disconnect");

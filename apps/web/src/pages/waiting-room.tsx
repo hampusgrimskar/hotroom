@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useSocket } from "../lib/socket-context";
 import { SocketEvents } from "@hotseat/shared";
@@ -7,6 +7,7 @@ import type { Player } from "@hotseat/shared";
 
 export function WaitingRoom() {
   const socket = useSocket();
+  const navigate = useNavigate();
   const location = useLocation();
   const initialPlayers = (location.state as { players?: Player[] })?.players || [];
   const [players, setPlayers] = useState<Player[]>(initialPlayers);
@@ -17,14 +18,14 @@ export function WaitingRoom() {
     });
 
     socket.on(SocketEvents.GAME_STARTED, () => {
-      // TODO: navigate to game screen
+      navigate("/game");
     });
 
     return () => {
       socket.off(SocketEvents.PLAYERS_UPDATED);
       socket.off(SocketEvents.GAME_STARTED);
     };
-  }, [socket]);
+  }, [socket, navigate]);
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-orange-500 to-red-600 p-4 text-white">

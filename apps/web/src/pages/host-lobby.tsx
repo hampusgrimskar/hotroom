@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useSocket } from "../lib/socket-context";
@@ -11,21 +11,25 @@ export function HostLobby() {
   const [game, setGame] = useState<Game | null>(null);
   const [players, setPlayers] = useState<Player[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const hasCreatedRef = useRef(false);
 
   useEffect(() => {
     socket.connect();
 
-    socket.emit(
-      SocketEvents.HOST_CREATE,
-      (response: { success: boolean; game?: Game; players?: Player[]; error?: string }) => {
-        if (response.success && response.game) {
-          setGame(response.game);
-          setPlayers(response.players || []);
-        } else {
-          setError(response.error || "Failed to create game");
-        }
-      },
-    );
+    if (!hasCreatedRef.current) {
+      hasCreatedRef.current = true;
+      socket.emit(
+        SocketEvents.HOST_CREATE,
+        (response: { success: boolean; game?: Game; players?: Player[]; error?: string }) => {
+          if (response.success && response.game) {
+            setGame(response.game);
+            setPlayers(response.players || []);
+          } else {
+            setError(response.error || "Failed to create game");
+          }
+        },
+      );
+    }
 
     socket.on(SocketEvents.PLAYERS_UPDATED, (updatedPlayers: Player[]) => {
       setPlayers(updatedPlayers);
@@ -38,7 +42,6 @@ export function HostLobby() {
     return () => {
       socket.off(SocketEvents.PLAYERS_UPDATED);
       socket.off(SocketEvents.GAME_STARTED);
-      socket.disconnect();
     };
   }, [socket, navigate]);
 

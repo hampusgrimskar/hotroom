@@ -10,8 +10,11 @@ export interface Player {
   winStreak: number;
 }
 
+export type GameState =
+  "lobby" | "prompt" | "play" | "read" | "vote" | "tiebreaker" | "reveal" | "results";
+
 export interface Game {
   id: string;
   code: string;
-  state: string;
+  state: GameState;
 }

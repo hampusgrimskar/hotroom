@@ -1,17 +1,33 @@
+import { randomInt } from "crypto";
 import { eq } from "drizzle-orm";
 import { games, players } from "../db/schema";
 import { PLAYER_COLORS } from "@hotseat/shared";
+import type { GameState } from "@hotseat/shared";
 import type { db as DbInstance } from "../db";
 
 const MAX_CODE_GENERATION_ATTEMPTS = 10;
 
+/** PostgreSQL unique constraint violation error code */
+const PG_UNIQUE_VIOLATION = "23505";
+
 function generateCode(): string {
+  // I, O, 0, 1 excluded to avoid ambiguity when reading codes aloud or on screen
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ";
   let code = "";
   for (let i = 0; i < 4; i++) {
-    code += chars[Math.floor(Math.random() * chars.length)];
+    code += chars[randomInt(chars.length)];
   }
   return code;
+}
+
+/** Type guard for errors that include a `code` property (e.g. PostgreSQL errors) */
+function isErrorWithCode(err: unknown): err is { code: string } {
+  return (
+    typeof err === "object" &&
+    err !== null &&
+    "code" in err &&
+    typeof (err as { code: unknown }).code === "string"
+  );
 }
 
 export function createGameService(db: typeof DbInstance) {
@@ -28,8 +44,7 @@ export function createGameService(db: typeof DbInstance) {
         return game;
       } catch (err: unknown) {
         // Catch unique constraint violation and retry
-        const error = err as { code?: string };
-        if (error.code === "23505") {
+        if (isErrorWithCode(err) && err.code === PG_UNIQUE_VIOLATION) {
           attempts++;
           continue;
         }
@@ -90,10 +105,7 @@ export function createGameService(db: typeof DbInstance) {
       .where(eq(players.socketId, socketId));
   }
 
-  async function updateGameState(
-    gameId: string,
-    state: "lobby" | "prompt" | "play" | "read" | "vote" | "tiebreaker" | "reveal" | "results",
-  ) {
+  async function updateGameState(gameId: string, state: GameState) {
     await db.update(games).set({ state }).where(eq(games.id, gameId));
   }
 
