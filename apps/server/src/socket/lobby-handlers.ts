@@ -55,6 +55,11 @@ export function registerLobbyHandlers(
   socket.on(SocketEvents.PLAYER_JOIN, async (data, callback) => {
     if (typeof callback !== "function") return;
     try {
+      if (!data || typeof data !== "object") {
+        if (typeof callback === "function") callback({ success: false, error: "Invalid payload" });
+        return;
+      }
+
       const { code, nickname } = data;
 
       if (!code || !nickname) {
